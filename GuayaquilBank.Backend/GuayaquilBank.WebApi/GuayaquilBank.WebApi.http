@@ -1,0 +1,6 @@
+@GuayaquilBank.WebApi_HostAddress = http://localhost:5228
+
+GET {{GuayaquilBank.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

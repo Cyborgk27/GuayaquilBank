@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="GuayaquilBank.Application/GuayaquilBank.Application.csproj" />
+    <Project Path="GuayaquilBank.Domain/GuayaquilBank.Domain.csproj" />
+    <Project Path="GuayaquilBank.Infrastructure/GuayaquilBank.Infrastructure.csproj" />
+    <Project Path="GuayaquilBank.WebApi/GuayaquilBank.WebApi.csproj" />
+  </Folder>
+</Solution>
