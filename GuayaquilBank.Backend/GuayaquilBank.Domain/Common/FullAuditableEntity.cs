@@ -16,12 +16,12 @@
         protected FullAuditableEntity(TKey id) : base(id) { }
         protected FullAuditableEntity() : base() { }
 
-        public void Delete(TUserId deletedBy)
+        public void Delete(DateTime deletedAtUtc, TUserId deletedBy)
         {
             if (IsDeleted) return;
 
             IsDeleted = true;
-            DeletedAtUtc = DateTime.UtcNow;
+            DeletedAtUtc = deletedAtUtc;
             DeletedBy = deletedBy;
         }
 

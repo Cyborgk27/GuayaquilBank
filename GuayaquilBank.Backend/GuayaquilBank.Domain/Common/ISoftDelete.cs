@@ -10,7 +10,7 @@
         TUserId? DeletedBy { get; }
         bool IsDeleted { get; }
 
-        void Delete(TUserId deletedBy);
+        void Delete(DateTime deletedAtUtc, TUserId deletedBy);
         void UndoDelete();
     }
 }
