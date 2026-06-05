@@ -11,6 +11,7 @@ namespace GuayaquilBank.Application.Extension
         {
             services.AddScoped<IAuthenticationAppService, AuthenticationAppService>();
             services.AddScoped<IProductAppService, ProductAppService>();
+            services.AddScoped<ISalesAppService, SalesAppService>();
             return services;
         }
     }

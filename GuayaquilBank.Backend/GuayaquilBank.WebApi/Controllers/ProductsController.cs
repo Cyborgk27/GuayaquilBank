@@ -56,7 +56,6 @@ namespace GuayaquilBank.WebApi.Controllers
         {
             var createdProduct = await _appService.CreateProductAsync(request);
 
-            // Retorna un 201 Created apuntando al endpoint de GetById para cumplir con REST
             return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
         }
 
