@@ -14,6 +14,7 @@ namespace GuayaquilBank.Domain.Entities.Identity
         public Company Company { get; private set; } = null!;
 
         public string Username { get; private set; }
+        public string PasswordHash { get; private set; }
 
         public string Email { get; private set; }
 
@@ -27,7 +28,7 @@ namespace GuayaquilBank.Domain.Entities.Identity
 
         public bool IsActive { get; private set; }
 
-        public User(Guid id, Guid companyId, string username, string email, string firstName, string lastName, string profilePictureUrl = "")
+        public User(Guid id, Guid companyId, string username, string passwordHash, string email, string firstName, string lastName, string profilePictureUrl = "")
             : base(id)
         {
             if (companyId == Guid.Empty)
@@ -35,6 +36,7 @@ namespace GuayaquilBank.Domain.Entities.Identity
 
             CompanyId = companyId;
             Username = ThrowIfNullOrEmpty(username, nameof(username));
+            PasswordHash = ThrowIfNullOrEmpty(passwordHash, nameof(passwordHash));
             Email = ThrowIfNullOrEmpty(email, nameof(email));
             FirstName = ThrowIfNullOrEmpty(firstName, nameof(firstName));
             LastName = ThrowIfNullOrEmpty(lastName, nameof(lastName));
