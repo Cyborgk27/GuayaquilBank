@@ -53,7 +53,6 @@ namespace GuayaquilBank.WebApi.Controllers
         {
             var response = await _appService.LoginAsync(request);
 
-            // MODIFICADO: Envolvemos los datos usando tu método unificado
             return ToResponse(response, "Sesión iniciada correctamente de forma segura.");
         }
     }
