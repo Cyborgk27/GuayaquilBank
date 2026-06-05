@@ -10,6 +10,7 @@ namespace GuayaquilBank.Application.Extension
         public static IServiceCollection AddInjectionApplication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IAuthenticationAppService, AuthenticationAppService>();
+            services.AddScoped<IProductAppService, ProductAppService>();
             return services;
         }
     }
