@@ -1,0 +1,82 @@
+<div class="bg-base-100 rounded-xl shadow-sm border border-base-200 overflow-hidden">
+  <div class="overflow-x-auto w-full">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr class="bg-base-200/50 text-sm text-base-content/80">
+          @for (col of columns; track col.key) {
+            <th>{{ col.label }}</th>
+          }
+          @if (actions.length > 0) {
+            <th class="text-center">Acciones</th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (isLoading) {
+          @for (row of [1, 2, 3, 4]; track $index) {
+            <tr>
+              @for (col of columns; track col.key) {
+                <td><div class="h-4 bg-base-300 rounded w-24 animate-pulse"></div></td>
+              }
+              @if (actions.length > 0) {
+                <td><div class="h-8 bg-base-300 rounded w-20 mx-auto animate-pulse"></div></td>
+              }
+            </tr>
+          }
+        } @else {
+          @for (row of data; track $index) {
+            <tr class="hover:bg-base-200/30 transition-colors duration-150">
+              @for (col of columns; track col.key) {
+                <td>
+                  @if (col.type === 'badge') {
+                    <span
+                      class="badge"
+                      [ngClass]="
+                        col.badgeClass ? col.badgeClass(getCellValue(row, col.key)) : 'badge-ghost'
+                      "
+                    >
+                      {{ getCellValue(row, col.key) ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  } @else {
+                    <span class="text-sm font-medium">{{
+                      getCellValue(row, col.key) ?? 'N/A'
+                    }}</span>
+                  }
+                </td>
+              }
+
+              @if (actions.length > 0) {
+                <td class="text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    @for (action of actions; track action.label) {
+                      <button
+                        (click)="action.callback(row)"
+                        [class]="'btn btn-square btn-ghost btn-sm ' + action.colorClass"
+                        [title]="action.label"
+                      >
+                        <i class="pi" [ngClass]="action.icon"></i>
+                      </button>
+                    }
+                  </div>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td
+                [attr.colspan]="columns.length + (actions.length > 0 ? 1 : 0)"
+                class="text-center py-12 text-base-content/40"
+              >
+                <div class="flex flex-col items-center justify-center gap-2">
+                  <i class="pi text-4xl mb-2 text-base-content/20" [ngClass]="emptyIcon"></i>
+                  <p class="font-semibold text-base-content/70">{{ emptyMessage }}</p>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
