@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using GuayaquilBank.Domain.Common;
+﻿using GuayaquilBank.Domain.Common;
 using GuayaquilBank.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

@@ -1,7 +1,6 @@
 ﻿using GuayaquilBank.Domain.Entities.Identity;
 using GuayaquilBank.Domain.Interfaces;
 using GuayaquilBank.Infrastructure.Common.Settings;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,9 +12,9 @@ namespace GuayaquilBank.Infrastructure.Authentication
     {
         private readonly InfrastructureSettings _settings;
 
-        public JwtProvider(IOptions<InfrastructureSettings> settings)
+        public JwtProvider(InfrastructureSettings settings)
         {
-            _settings = settings.Value;
+            _settings = settings;
         }
         public string GenerateToken(User user)
         {
