@@ -46,5 +46,5 @@
         {
             return !(left == right);
         }
-    }r
+    }
 }
