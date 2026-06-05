@@ -4,6 +4,8 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { Configuration } from './core/api/v1/configuration';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,5 +16,11 @@ export const appConfig: ApplicationConfig = {
         errorInterceptor
       ])
     ),
+    {
+      provide: Configuration,
+      useFactory: () => new Configuration({
+        basePath: environment.apiUrl,
+      })
+    },
   ]
 };
