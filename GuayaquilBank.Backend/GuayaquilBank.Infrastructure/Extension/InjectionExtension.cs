@@ -1,8 +1,12 @@
 ﻿using GuayaquilBank.Domain.Interfaces;
+using GuayaquilBank.Infrastructure.Authentication;
 using GuayaquilBank.Infrastructure.Common.Settings;
+using GuayaquilBank.Infrastructure.Identity;
 using GuayaquilBank.Infrastructure.Interceptor;
 using GuayaquilBank.Infrastructure.Persistence.Context;
 using GuayaquilBank.Infrastructure.Persistence.Seeder;
+using GuayaquilBank.Infrastructure.Services;
+using GuayaquilBank.Infrastructure.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +17,6 @@ namespace GuayaquilBank.Infrastructure.Extension
     {
         public static IServiceCollection AddInjectionInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            // 1. Cargar y registrar configuraciones tipadas
             var infraSettings = configuration.GetSection("Infrastructure").Get<InfrastructureSettings>();
             if (infraSettings == null)
             {
@@ -62,6 +65,15 @@ namespace GuayaquilBank.Infrastructure.Extension
                     }
                 });
             });
+
+            services.AddHttpContextAccessor();
+
+            services.AddScoped<ICurrentUser, CurrentUser>();
+
+            services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+            services.AddTransient<IJwtProvider, JwtProvider>();
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
 
             return services;
         }
