@@ -1,4 +1,8 @@
-﻿using GuayaquilBank.Domain.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using GuayaquilBank.Domain.Interfaces;
+using GuayaquilBank.Domain.Entities.Inventory;
 using GuayaquilBank.Infrastructure.Persistence.Context;
 using GuayaquilBank.Infrastructure.Persistence.Factory.Identity;
 using GuayaquilBank.Infrastructure.Persistence.Factory.Inventory;
@@ -29,6 +33,8 @@ namespace GuayaquilBank.Infrastructure.Persistence.Seeder
                 return;
             }
 
+            var random = new Random();
+
             var companies = CompanyFactory.Create(10);
             _context.Companies.AddRange(companies);
 
@@ -42,26 +48,29 @@ namespace GuayaquilBank.Infrastructure.Persistence.Seeder
                 var products = ProductFactory.Create(company.Id, count: 50);
                 _context.Products.AddRange(products);
 
-                var allBatchesForCompany = new List<Domain.Entities.Inventory.ProductBatch>();
-                var random = new Random();
+                var allBatchesForCompany = new List<ProductBatch>();
 
                 foreach (var product in products)
                 {
-                    var batches = ProductBatchFactory.Create(product.Id, random.Next(1, 100));
+                    var batchesCount = random.Next(1, 5);
+                    var batches = ProductBatchFactory.Create(product.Id, batchesCount);
                     allBatchesForCompany.AddRange(batches);
                 }
                 _context.ProductBatches.AddRange(allBatchesForCompany);
 
-                var customers = CustomerFactory.Create(company.Id, count: 5);
+                var customers = CustomerFactory.Create(company.Id, count: 25);
                 _context.Customers.AddRange(customers);
 
                 foreach (var customer in customers)
                 {
+                    var invoiceCount = random.Next(1, 6);
+
                     var invoices = InvoiceFactory.Create(
                         companyId: company.Id,
                         customerId: customer.Id,
+                        availableUsers: users,
                         availableBatches: allBatchesForCompany,
-                        count: random.Next(1, 50)
+                        count: invoiceCount
                     );
 
                     _context.Invoices.AddRange(invoices);

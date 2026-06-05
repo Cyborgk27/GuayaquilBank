@@ -1,4 +1,7 @@
-﻿using GuayaquilBank.Domain.Common;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using GuayaquilBank.Domain.Common;
 using GuayaquilBank.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -40,7 +43,6 @@ namespace GuayaquilBank.Infrastructure.Interceptor
             if (context == null) return;
 
             var currentTime = _dateTimeProvider.UtcNow;
-
             var currentUserId = _currentUser.UserId ?? Guid.Empty;
 
             foreach (var entry in context.ChangeTracker.Entries())
@@ -49,7 +51,18 @@ namespace GuayaquilBank.Infrastructure.Interceptor
                 {
                     if (entry.State == EntityState.Added)
                     {
-                        auditableEntity.SetCreation(currentTime, currentUserId);
+                        var existingCreatedBy = auditableEntity.CreatedBy;
+                        var existingCreatedAt = auditableEntity.CreatedAtUtc;
+
+                        var finalUserId = (existingCreatedBy != Guid.Empty && existingCreatedBy != default)
+                            ? existingCreatedBy
+                            : currentUserId;
+
+                        var finalTime = (existingCreatedAt != default)
+                            ? existingCreatedAt
+                            : currentTime;
+
+                        auditableEntity.SetCreation(finalTime, finalUserId);
                     }
                     else if (entry.State == EntityState.Modified)
                     {
@@ -60,7 +73,6 @@ namespace GuayaquilBank.Infrastructure.Interceptor
                 if (entry.Entity is ISoftDelete<Guid> softDeleteEntity && entry.State == EntityState.Deleted)
                 {
                     entry.State = EntityState.Modified;
-
                     softDeleteEntity.Delete(currentTime, currentUserId);
                 }
             }
