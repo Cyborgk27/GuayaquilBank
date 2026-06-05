@@ -12,6 +12,9 @@ namespace GuayaquilBank.Application.Extension
             services.AddScoped<IAuthenticationAppService, AuthenticationAppService>();
             services.AddScoped<IProductAppService, ProductAppService>();
             services.AddScoped<ISalesAppService, SalesAppService>();
+            services.AddScoped<IUserAppService, UserAppService>();
+            services.AddScoped<ICustomerAppService, CustomerAppService>();
+            services.AddScoped<IProfileAppService, ProfileAppService>();
             return services;
         }
     }

@@ -7,9 +7,12 @@ using GuayaquilBank.Infrastructure.Persistence.Context;
 using GuayaquilBank.Infrastructure.Persistence.Seeder;
 using GuayaquilBank.Infrastructure.Services;
 using GuayaquilBank.Infrastructure.Web;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace GuayaquilBank.Infrastructure.Extension
 {
@@ -41,6 +44,28 @@ namespace GuayaquilBank.Infrastructure.Extension
                 {
                     throw new InvalidOperationException($"El proveedor '{infraSettings.DatabaseProvider}' no está soportado en Guayaquil Bank.");
                 }
+            });
+
+            var jwtSettings = infraSettings.Security.Jwt;
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                    ClockSkew = TimeSpan.Zero
+                };
             });
 
             services.AddScoped<IApplicationDbContext>(provider =>

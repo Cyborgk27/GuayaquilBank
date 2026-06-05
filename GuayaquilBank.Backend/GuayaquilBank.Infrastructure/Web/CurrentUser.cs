@@ -32,7 +32,7 @@ namespace GuayaquilBank.Infrastructure.Web
         {
             get
             {
-                var companyIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("company_id")?.Value;
+                var companyIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("companyId")?.Value;
 
                 if (Guid.TryParse(companyIdClaim, out var parsedGuid))
                 {
