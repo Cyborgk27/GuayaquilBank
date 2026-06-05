@@ -2,6 +2,7 @@
 using GuayaquilBank.Application.Dtos.Common;
 using GuayaquilBank.Application.Dtos.Identity.Request;
 using GuayaquilBank.Application.Dtos.Identity.Response;
+using GuayaquilBank.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuayaquilBank.WebApi.Controllers
@@ -11,8 +12,7 @@ namespace GuayaquilBank.WebApi.Controllers
     /// Mantiene de forma estricta el aislamiento por Tenant (Empresa) según el contexto del usuario autenticado.
     /// </summary>
     [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseApiController
     {
         private readonly IUserAppService _userService;
 
@@ -49,12 +49,14 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="201">Retorna el usuario registrado exitosamente con su ID generado.</response>
         /// <response code="400">Si el Username o Email ya existen de manera global o los campos no cumplen las validaciones.</response>
         [HttpPost]
-        [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<UserResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserRequestDto request)
         {
             var result = await _userService.CreateAsync(request);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
+
+            var response = ApiResponse<UserResponseDto>.SuccessResponse(result, "Usuario registrado y credenciales inicializadas con éxito.", StatusCodes.Status201Created);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, response);
         }
 
         /// <summary>
@@ -64,11 +66,12 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <returns>Objeto de paginación con la lista filtrada de usuarios.</returns>
         /// <response code="200">Retorna la colección paginada solicitada.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(PaginationResponseDto<UserResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<PaginationResponseDto<UserResponseDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationRequestDto request)
         {
             var result = await _userService.GetPagedAsync(request);
-            return Ok(result);
+
+            return ToResponse(result, "Listado de usuarios operativos recuperado con éxito.");
         }
 
         /// <summary>
@@ -79,16 +82,17 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="200">Retorna el usuario localizado con éxito.</response>
         /// <response code="404">Si el ID no existe en los registros o el usuario pertenece a otra organización corporativa.</response>
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<UserResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var result = await _userService.GetByIdAsync(id);
             if (result == null)
             {
-                return NotFound(new { Message = $"El usuario con ID {id} no fue localizado en este Tenant." });
+                return NotFound(ApiResponse<object>.FailureResponse($"El usuario con ID {id} no fue localizado en este Tenant.", null, StatusCodes.Status404NotFound));
             }
-            return Ok(result);
+
+            return ToResponse(result, "Usuario localizado.");
         }
 
         /// <summary>
@@ -101,13 +105,14 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="400">Si el correo electrónico ingresado ya está en uso por otro miembro o los formatos son inválidos.</response>
         /// <response code="404">Si el usuario a editar no pertenece al entorno de la empresa del solicitante.</response>
         [HttpPut("{id:guid}")]
-        [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<UserResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateUserRequestDto request)
         {
             var result = await _userService.UpdateAsync(id, request);
-            return Ok(result);
+
+            return ToResponse(result, "El perfil del operador fue actualizado con éxito.");
         }
 
         /// <summary>
@@ -118,12 +123,13 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="204">Confirma que el usuario ha sido marcado como eliminado lógicamente.</response>
         /// <response code="404">Si el usuario no fue localizado en el Tenant actual.</response>
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _userService.DeleteAsync(id);
-            return NoContent();
+
+            return ToResponse((object?)null, "El usuario ha sido removido del sistema de forma lógica.", StatusCodes.Status204NoContent);
         }
 
         /// <summary>
@@ -137,12 +143,13 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="204">El estado del usuario se actualizó de forma satisfactoria en la base de datos.</response>
         /// <response code="404">Si el operador no existe bajo los alcances de la empresa autenticada.</response>
         [HttpPatch("{id:guid}/toggle-status")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ToggleStatusAsync(Guid id)
         {
             await _userService.ToggleStatusAsync(id);
-            return NoContent();
+
+            return ToResponse((object?)null, "El estado de acceso del usuario ha sido conmutado con éxito.", StatusCodes.Status204NoContent);
         }
     }
 }

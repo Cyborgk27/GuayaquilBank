@@ -2,7 +2,7 @@
 using GuayaquilBank.Application.Dtos.Common;
 using GuayaquilBank.Application.Dtos.Sales.Request;
 using GuayaquilBank.Application.Dtos.Sales.Response;
-using Microsoft.AspNetCore.Http;
+using GuayaquilBank.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuayaquilBank.WebApi.Controllers
@@ -12,8 +12,7 @@ namespace GuayaquilBank.WebApi.Controllers
     /// Garantiza el aislamiento por Tenant de manera transparente basándose en la sesión del usuario actual.
     /// </summary>
     [Route("api/[controller]")]
-    [ApiController]
-    public class CustomersController : ControllerBase
+    public class CustomersController : BaseApiController
     {
         private readonly ICustomerAppService _customerService;
 
@@ -47,12 +46,14 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="201">Retorna el cliente creado exitosamente junto con la cabecera Location.</response>
         /// <response code="400">Si los datos enviados fallan las validaciones o la identificación ya está registrada.</response>
         [HttpPost]
-        [ProducesResponseType(typeof(CustomerResponseDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<CustomerResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCustomerRequestDto request)
         {
             var result = await _customerService.CreateAsync(request);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
+
+            var response = ApiResponse<CustomerResponseDto>.SuccessResponse(result, "Cliente registrado exitosamente.", StatusCodes.Status201Created);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, response);
         }
 
         /// <summary>
@@ -62,11 +63,11 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <returns>Colección paginada de clientes que coinciden con los criterios establecidos.</returns>
         /// <response code="200">Retorna la estructura de paginación con la lista de clientes solicitada.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(PaginationResponseDto<CustomerResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<PaginationResponseDto<CustomerResponseDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedAsync([FromQuery] PaginationRequestDto request)
         {
             var result = await _customerService.GetPagedAsync(request);
-            return Ok(result);
+            return ToResponse(result, "Listado de clientes recuperado con éxito.");
         }
 
         /// <summary>
@@ -77,16 +78,17 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="200">Retorna el cliente encontrado.</response>
         /// <response code="404">Si el cliente no existe o no pertenece al Tenant del usuario autenticado.</response>
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(CustomerResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<CustomerResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var result = await _customerService.GetByIdAsync(id);
             if (result == null)
             {
-                return NotFound(new { Message = $"El cliente con ID {id} no fue localizado en este Tenant." });
+                return NotFound(ApiResponse<object>.FailureResponse($"El cliente con ID {id} no fue localizado en este Tenant.", null, StatusCodes.Status404NotFound));
             }
-            return Ok(result);
+
+            return ToResponse(result, "Cliente localizado.");
         }
 
         /// <summary>
@@ -99,14 +101,13 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="400">Si los datos de actualización son inválidos o la nueva identificación colisiona con otro cliente.</response>
         /// <response code="404">Si el cliente solicitado no existe en los registros de la empresa.</response>
         [HttpPut("{id:guid}")]
-        [ProducesResponseType(typeof(CustomerResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<CustomerResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateCustomerRequestDto request)
         {
-            // Nota: Aquí se corrigió la variable '_userService' por '_customerService' que tenías en tu código base
             var result = await _customerService.UpdateAsync(id, request);
-            return Ok(result);
+            return ToResponse(result, "Los datos del cliente se actualizaron de forma satisfactoria.");
         }
 
         /// <summary>
@@ -117,12 +118,12 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="204">Indica que el cliente fue marcado como eliminado correctamente.</response>
         /// <response code="404">Si el cliente no existe en el Tenant actual.</response>
         [HttpDelete("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _customerService.DeleteAsync(id);
-            return NoContent();
+            return ToResponse((object?)null, "Cliente removido del sistema operativo con éxito.", StatusCodes.Status204NoContent);
         }
 
         /// <summary>
@@ -133,12 +134,12 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="204">El estado del cliente cambió y se guardó exitosamente.</response>
         /// <response code="404">Si el cliente no se encuentra registrado dentro de la empresa.</response>
         [HttpPatch("{id:guid}/toggle-status")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ToggleStatusAsync(Guid id)
         {
             await _customerService.ToggleStatusAsync(id);
-            return NoContent();
+            return ToResponse((object?)null, "El estado comercial del cliente fue conmutado con éxito.", StatusCodes.Status204NoContent);
         }
     }
 }

@@ -2,6 +2,9 @@ using GuayaquilBank.Application.Extension;
 using GuayaquilBank.Infrastructure.Extension;
 using GuayaquilBank.Infrastructure.Persistence.Context;
 using GuayaquilBank.Infrastructure.Persistence.Seeder;
+using GuayaquilBank.WebApi.Middlewares;
+using GuayaquilBank.WebApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
@@ -21,7 +24,30 @@ try
 
     builder.Host.UseSerilog();
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = new List<string>();
+            foreach (var keyModelStatePair in context.ModelState)
+            {
+                foreach (var error in keyModelStatePair.Value.Errors)
+                {
+                    errors.Add(error.ErrorMessage);
+                }
+            }
+
+            var apiResponse = ApiResponse<object>.FailureResponse(
+                message: "Falla en la validación de los datos enviados.",
+                errors: errors,
+                code: 400
+            );
+
+            return new BadRequestObjectResult(apiResponse);
+        };
+    });
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options =>
     {
@@ -99,6 +125,8 @@ try
     app.UseHttpsRedirection();
 
     app.UseCors("GuayaquilBankCorsPolicy");
+
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
 
     app.UseAuthorization();
 

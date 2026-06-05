@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using GuayaquilBank.Application.Contracts;
+﻿using GuayaquilBank.Application.Contracts;
 using GuayaquilBank.Application.Dtos.Profile.Request;
 using GuayaquilBank.Application.Dtos.Profile.Response;
-using Microsoft.AspNetCore.Http;
+using GuayaquilBank.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuayaquilBank.WebApi.Controllers
@@ -12,8 +11,7 @@ namespace GuayaquilBank.WebApi.Controllers
     /// Resuelve de forma segura las identidades mediante el procesamiento del Bearer Token JWT.
     /// </summary>
     [Route("api/[controller]")]
-    [ApiController]
-    public class ProfileController : ControllerBase
+    public class ProfileController : BaseApiController
     {
         private readonly IProfileAppService _profileService;
 
@@ -31,11 +29,13 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="200">Retorna los datos informativos del operador en sesión.</response>
         /// <response code="401">Si el token no es enviado o ha expirado.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(MyUserResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<MyUserResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetMyProfileAsync()
         {
             var result = await _profileService.GetMyProfileAsync();
-            return Ok(result);
+
+            return ToResponse(result, "Perfil de usuario cargado correctamente.");
         }
 
         /// <summary>
@@ -44,26 +44,28 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="200">El perfil ha sido modificado y guardado con éxito.</response>
         /// <response code="400">Si el correo ingresado ya pertenece a otra cuenta en la plataforma.</response>
         [HttpPut]
-        [ProducesResponseType(typeof(MyUserResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<MyUserResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateMyProfileAsync([FromBody] UpdateMyProfileRequestDto request)
         {
             var result = await _profileService.UpdateMyProfileAsync(request);
-            return Ok(result);
+
+            return ToResponse(result, "Tu información de perfil ha sido actualizada con éxito.");
         }
 
         /// <summary>
         /// Recupera la configuración comercial, localización y parámetros financieros (IVA, Moneda) de la empresa del usuario actual.
         /// </summary>
         /// <response code="200">Retorna los parámetros de configuración del Tenant actual.</response>
-        /// <response code="404">Si el usuario no está asociado a una empresa válida.<///response>
+        /// <response code="404">Si el usuario no está asociado a una empresa válida.</response>
         [HttpGet("company")]
-        [ProducesResponseType(typeof(MyCompanyResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<MyCompanyResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMyCompanyAsync()
         {
             var result = await _profileService.GetMyCompanyAsync();
-            return Ok(result);
+
+            return ToResponse(result, "Datos comerciales de la empresa recuperados con éxito.");
         }
 
         /// <summary>
@@ -73,14 +75,15 @@ namespace GuayaquilBank.WebApi.Controllers
         /// Este endpoint impactará la información impresa de las facturas electrónicas y PDFs emitidos a partir del guardado.
         /// </remarks>
         /// <response code="200">Configuración corporativa guardada con éxito.</response>
-        /// <response code="400">Si los datos comerciales fallan validaciones de unicidad fiscal.<///response>
+        /// <response code="400">Si los datos comerciales fallan validaciones de unicidad fiscal.</response>
         [HttpPut("company")]
-        [ProducesResponseType(typeof(MyCompanyResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<MyCompanyResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateMyCompanyAsync([FromBody] UpdateMyCompanyRequestDto request)
         {
             var result = await _profileService.UpdateMyCompanyAsync(request);
-            return Ok(result);
+
+            return ToResponse(result, "Los parámetros de la configuración empresarial se guardaron correctamente.");
         }
     }
 }

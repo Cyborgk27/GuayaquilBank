@@ -1,6 +1,7 @@
 ﻿using GuayaquilBank.Application.Contracts;
 using GuayaquilBank.Application.Dtos.Authentication.Request;
 using GuayaquilBank.Application.Dtos.Authentication.Response;
+using GuayaquilBank.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuayaquilBank.WebApi.Controllers
@@ -10,8 +11,7 @@ namespace GuayaquilBank.WebApi.Controllers
     /// Proporciona los tokens de acceso JWT requeridos para consumir el resto de endpoints protegidos.
     /// </summary>
     [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseApiController
     {
         private readonly IAuthenticationAppService _appService;
 
@@ -46,13 +46,15 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="400">Si los campos enviados no cumplen con los formatos requeridos.</response>
         /// <response code="401">Si las credenciales (usuario o contraseña) son incorrectas o el usuario está inactivo.</response>
         [HttpPost("login")]
-        [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<LoginResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
             var response = await _appService.LoginAsync(request);
-            return Ok(response);
+
+            // MODIFICADO: Envolvemos los datos usando tu método unificado
+            return ToResponse(response, "Sesión iniciada correctamente de forma segura.");
         }
     }
 }
