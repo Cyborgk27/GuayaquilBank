@@ -1,0 +1,61 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200 px-4 font-sans">
+  <div class="card w-full max-w-md bg-base-100 shadow-xl border border-base-200">
+    <div class="card-body p-8">
+
+      <div class="text-center mb-6">
+        <h2 class="text-3xl font-bold text-primary tracking-tight">Guayaquil Bank</h2>
+        <p class="text-sm text-base-content/60 mt-1">ERP Modular Multi-Tenant</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="off">
+
+        <app-generic-input
+          label="Empresa / Dominio"
+          placeholder="ej: guayaquilbank"
+          icon="pi-globe"
+          iconPosition="left"
+          formControlName="domain"
+          [isInvalid]="isFieldInvalid('domain')"
+          errorMessage="El dominio de la empresa es requerido.">
+        </app-generic-input>
+
+        <app-generic-input
+          label="Nombre de Usuario"
+          placeholder="ej: mbarcelona"
+          icon="pi-user"
+          iconPosition="left"
+          formControlName="username"
+          [isInvalid]="isFieldInvalid('username')"
+          errorMessage="Ingresa un nombre de usuario válido.">
+        </app-generic-input>
+
+        <app-generic-input
+          label="Contraseña"
+          type="password"
+          placeholder="••••••••"
+          icon="pi-lock"
+          iconPosition="left"
+          formControlName="password"
+          [isInvalid]="isFieldInvalid('password')"
+          errorMessage="La contraseña debe tener al menos 6 caracteres.">
+        </app-generic-input>
+
+        <div class="form-control mt-6">
+          <button
+            type="submit"
+            class="btn btn-primary btn-block text-base font-semibold"
+            [disabled]="isLoading()">
+            @if (isLoading()) {
+              <span class="loading loading-spinner loading-sm"></span>
+              Procesando...
+            } @else {
+              <i class="pi pi-sign-in text-sm"></i>
+              Ingresar al Sistema
+            }
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
