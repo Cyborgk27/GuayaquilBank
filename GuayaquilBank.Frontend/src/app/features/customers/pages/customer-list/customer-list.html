@@ -1,0 +1,68 @@
+<div class="p-6 max-w-7xl mx-auto font-sans">
+
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-base-content tracking-tight">Gestión de Clientes</h1>
+      <p class="text-sm text-base-content/60 font-medium">Lista global unificada de cuentas y comercios afiliados.</p>
+    </div>
+    <button (click)="openCreateModal()" class="btn btn-primary gap-2 self-start sm:self-auto shadow-md">
+      <i class="pi pi-plus text-xs"></i>
+      Nuevo Cliente
+    </button>
+  </div>
+
+  <div class="mb-6">
+    <app-data-filter (onSearch)="handleSearch($event)"></app-data-filter>
+  </div>
+
+  <app-generic-table
+    [columns]="tableColumns"
+    [data]="customers()"
+    [isLoading]="isLoading()"
+    [actions]="tableActions"
+    [currentPage]="page()"
+    [totalPages]="totalPages()"
+    [totalItems]="totalItems()"
+    (pageChange)="page.set($event)"
+    emptyMessage="No se encontraron clientes registrados en este dominio corporativo."
+    emptyIcon="pi-users">
+  </app-generic-table>
+
+</div>
+
+<app-generic-modal
+  #customerModal
+  [title]="customerFormComponent.isEditMode() ? 'Modificar Información del Cliente' : 'Registrar Nuevo Cliente'"
+  sizeClass="max-w-xl">
+
+  <div modal-body class="relative">
+    @if (isModalLoading() && customerFormComponent.isEditMode()) {
+      <div class="absolute inset-0 bg-base-100/80 z-10 flex flex-col items-center justify-center gap-3 rounded-xl min-h-[300px]">
+        <span class="loading loading-spinner loading-md text-primary"></span>
+        <span class="text-xs font-semibold text-base-content/60">Recuperando registros del servidor bancario...</span>
+      </div>
+    }
+
+    <app-customer-form
+      #customerFormComponent
+      (onSubmitForm)="handleFormSubmit($event)"
+      (onCancel)="customerModal.close()">
+    </app-customer-form>
+  </div>
+
+  <ng-container modal-footer>
+    <button (click)="customerModal.close()" class="btn btn-sm btn-ghost" [disabled]="isModalLoading()">
+      Cancelar
+    </button>
+    <button
+      (click)="customerFormComponent.submit()"
+      class="btn btn-sm btn-primary px-5 shadow-md gap-2"
+      [disabled]="isModalLoading()">
+      @if (isModalLoading()) {
+        <span class="loading loading-spinner loading-xs"></span>
+      }
+      {{ customerFormComponent.isEditMode() ? 'Actualizar Registro' : 'Guardar Cliente' }}
+    </button>
+  </ng-container>
+
+</app-generic-modal>

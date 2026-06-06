@@ -1,0 +1,67 @@
+<form [formGroup]="customerForm" (ngSubmit)="submit()" class="space-y-4 font-sans text-base-content">
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+    <app-generic-input
+      formControlName="identification"
+      label="Identificación / RUC *"
+      placeholder="Ej. 0954360310"
+      type="text"
+      icon="pi-id-card"
+      iconPosition="left"
+      [isInvalid]="isFieldInvalid('identification')"
+      [errorMessage]="getErrorMessage('identification')">
+    </app-generic-input>
+
+    <app-generic-input
+      formControlName="phoneNumber"
+      label="Teléfono Celular *"
+      placeholder="Ej. 0926692660"
+      type="text"
+      icon="pi-phone"
+      iconPosition="left"
+      [isInvalid]="isFieldInvalid('phoneNumber')"
+      [errorMessage]="getErrorMessage('phoneNumber')">
+    </app-generic-input>
+
+  </div>
+
+  <app-generic-input
+    formControlName="fullName"
+    label="Razón Social / Nombre Completo *"
+    placeholder="Ej. Alejandra Dueñas"
+    type="text"
+    icon="pi-user"
+    iconPosition="left"
+    [isInvalid]="isFieldInvalid('fullName')"
+    [errorMessage]="getErrorMessage('fullName')">
+  </app-generic-input>
+
+  <app-generic-input
+    formControlName="email"
+    label="Correo Electrónico *"
+    placeholder="nombre@empresa.com"
+    type="email"
+    icon="pi-envelope"
+    iconPosition="left"
+    [isInvalid]="isFieldInvalid('email')"
+    [errorMessage]="getErrorMessage('email')">
+  </app-generic-input>
+
+  <div class="form-control w-full">
+    <label class="label"><span class="label-text font-semibold text-sm">Dirección Domiciliaria / Matriz *</span></label>
+    <textarea
+      formControlName="address"
+      placeholder="Ej. Av. Carlos Julio Arosemena, Km 2.5..."
+      class="textarea textarea-bordered w-full min-h-[80px] rounded-xl focus:outline-none focus:border-primary resize-none text-sm"
+      [ngClass]="{ 'textarea-error': isFieldInvalid('address') }">
+    </textarea>
+    @if (isFieldInvalid('address')) {
+      <span class="text-[11px] text-error mt-1 font-medium px-1">{{ getErrorMessage('address') }}</span>
+    }
+  </div>
+
+  <div class="hidden">
+    <button type="submit" id="hidden-submit-btn"></button>
+  </div>
+</form>
