@@ -3,9 +3,11 @@ import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Ui } from '../service/ui';
 import { ObjectApiResponse } from '../api/v1';
+import { Router } from '@angular/router';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const ui = inject(Ui);
+  const router = inject(Router);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -32,6 +34,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           case 401:
             errorTitle = 'Sesión Expirada';
             errorMessage = apiResponse?.message || 'Tu sesión ha terminado. Por favor, vuelve a iniciar sesión.';
+            router.navigate(['/login']);
             break;
 
           case 403:

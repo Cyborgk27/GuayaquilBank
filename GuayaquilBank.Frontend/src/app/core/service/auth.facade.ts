@@ -1,7 +1,7 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { AuthApiService, LoginRequestDto, LoginResponseDto } from '../api/v1';
+import { AuthApiService, LoginRequestDto, LoginResponseDto, ObjectApiResponse } from '../api/v1';
 
 @Injectable({
   providedIn: 'root'
@@ -28,16 +28,15 @@ export class AuthFacade {
   // ==========================================
 
   /**
-    * Ejecuta el flujo de autenticación contra la API unificada.
-    */
-  public login(credentials: LoginRequestDto): Observable<LoginResponseDto> {
+   * Ejecuta el flujo de autenticación contra la API unificada.
+   */
+  public login(credentials: LoginRequestDto): Observable<ObjectApiResponse> {
     return this.authApiService.apiAuthLoginPost(credentials).pipe(
+      map((response: any) => response as ObjectApiResponse),
 
-      map((response: any) => response as LoginResponseDto),
-
-      tap((sessionData: LoginResponseDto) => {
-        if (sessionData && sessionData.token) {
-          this.setSession(sessionData.token, sessionData);
+      tap((response: ObjectApiResponse) => {
+        if (response && response.data && response.data.token) {
+          this.setSession(response.data.token, response.data);
         }
       })
     );
