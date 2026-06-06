@@ -151,6 +151,7 @@ namespace GuayaquilBank.Application.Services
         {
             var query = _context.Invoices
                 .Include(i => i.Customer)
+                .Include(i => i.Details)
                 .Where(i => i.CompanyId == _currentUser.CompanyId)
                 .AsNoTracking();
 
