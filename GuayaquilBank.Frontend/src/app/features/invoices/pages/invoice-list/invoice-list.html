@@ -1,0 +1,51 @@
+<div class="p-6 max-w-7xl mx-auto font-sans">
+
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-base-content tracking-tight">Facturación Electrónica</h1>
+      <p class="text-sm text-base-content/60 font-medium">Historial de comprobantes autorizados y emitidos en el core del negocio.</p>
+    </div>
+    <button class="btn btn-primary gap-2 self-start sm:self-auto shadow-md">
+      <i class="pi pi-plus text-xs"></i>
+      Nueva Factura
+    </button>
+  </div>
+
+  <div class="mb-6">
+    <app-data-filter (onSearch)="handleSearch($event)"></app-data-filter>
+  </div>
+
+  <app-generic-table
+    [columns]="tableColumns"
+    [data]="invoices()"
+    [isLoading]="isLoading()"
+    [actions]="tableActions"
+    [currentPage]="page()"
+    [totalPages]="totalPages()"
+    [totalItems]="totalItems()"
+    (pageChange)="page.set($event)"
+    emptyMessage="No se encontraron facturas o comprobantes emitidos en este periodo."
+    emptyIcon="pi-file">
+  </app-generic-table>
+
+</div>
+
+<app-generic-modal
+  #pdfModal
+  title="Visualización de Comprobante Digital"
+  sizeClass="max-w-4xl"
+  (onClose)="closePdfModal()">
+
+  <div modal-body>
+    @if (selectedInvoiceId()) {
+      <app-invoice-pdf-viewer [invoiceId]="selectedInvoiceId()!"></app-invoice-pdf-viewer>
+    }
+  </div>
+
+  <ng-container modal-footer>
+    <button (click)="closePdfModal()" class="btn btn-sm btn-ghost">
+      Cerrar Visor
+    </button>
+  </ng-container>
+
+</app-generic-modal>
