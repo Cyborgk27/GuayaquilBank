@@ -38,4 +38,18 @@ export class GenericTable<T extends Record<string, any>> {
       this.pageChange.emit(newPage);
     }
   }
+
+  /**
+ * Verifica si el label provisto es una función dinámica
+ */
+  public isFunction(label: any): boolean {
+    return typeof label === 'function';
+  }
+
+  /**
+   * Helper de casteo para que el template ejecute la función sin problemas de tipos
+   */
+  public asFunction(label: any): (row: T) => string {
+    return label as (row: T) => string;
+  }
 }
