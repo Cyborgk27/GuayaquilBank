@@ -39,14 +39,14 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="201">Factura procesada y emitida con éxito.</response>
         /// <response code="400">Si no hay stock suficiente en los lotes o los totales del cliente no cuadran matemáticamente.</response>
         [HttpPost]
-        [ProducesResponseType(typeof(ApiResponse<InvoiceResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<InvoiceResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateInvoiceRequestDto request)
         {
             var result = await _appService.CreateInvoiceAsync(request);
 
-            var response = ApiResponse<InvoiceResponseDto>.SuccessResponse(result, "Factura emitida y procesada correctamente.", StatusCodes.Status201Created);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, response);
+            var response = ApiResponse<InvoiceResponseDto>.SuccessResponse(result, "Factura emitida y procesada correctamente.", StatusCodes.Status200OK);
+            return CreatedAtAction("GetById", new { id = result.Id }, response);
         }
 
         /// <summary>

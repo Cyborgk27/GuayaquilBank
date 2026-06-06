@@ -1,0 +1,177 @@
+<form
+  [formGroup]="invoiceForm"
+  (ngSubmit)="submit()"
+  class="space-y-6 font-sans text-base-content max-h-[70vh] overflow-y-auto px-1"
+>
+  <div class="bg-base-200/30 border border-base-300 p-4 rounded-xl shadow-sm">
+    <h3
+      class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2"
+    >
+      <i class="pi pi-user text-xs"></i> Información del Comprador
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <div class="md:col-span-1">
+        <app-generic-autocomplete
+          label="Buscar Cliente Paginado"
+          placeholder="Escribe RUC o Razón Social..."
+          [options]="customerOptions()"
+          [isLoading]="isCustomersLoading()"
+          (onQueryChange)="searchCustomers($event)"
+          (ngModelChange)="onCustomerSelected($event)"
+          [ngModelOptions]="{ standalone: true }"
+          [ngModel]="null"
+        >
+        </app-generic-autocomplete>
+      </div>
+
+      <app-generic-input
+        formControlName="clientIdentification"
+        label="Identificación / RUC Final *"
+        [isInvalid]="isFieldInvalid('clientIdentification')"
+        errorMessage="Campo obligatorio."
+      >
+      </app-generic-input>
+
+      <app-generic-input
+        formControlName="clientName"
+        label="Razón Social / Nombre Final *"
+        [isInvalid]="isFieldInvalid('clientName')"
+        errorMessage="Campo obligatorio."
+      >
+      </app-generic-input>
+    </div>
+  </div>
+
+  <div class="border border-base-300 rounded-xl overflow-visible shadow-sm bg-base-100">
+    <div
+      class="px-4 py-3 bg-base-200/60 border-b border-base-300 flex justify-between items-center"
+    >
+      <h3
+        class="text-xs font-bold uppercase tracking-wider text-base-content/40 flex items-center gap-2"
+      >
+        <i class="pi pi-shopping-cart text-xs"></i> Desglose de Productos y Lotes
+      </h3>
+      <button type="button" (click)="addDetailRow()" class="btn btn-xs btn-primary gap-1 shadow-sm">
+        <i class="pi pi-plus text-[10px]"></i> Añadir Item
+      </button>
+    </div>
+
+    <table class="table table-compact w-full border-none">
+      <thead class="bg-base-200/30 text-base-content/70">
+        <tr>
+          <th class="w-2/5 text-xs font-semibold py-3 pl-4">Seleccionar Producto *</th>
+          <th class="w-1/4 text-xs font-semibold py-3">Lote (Batch) *</th>
+          <th class="w-20 text-xs font-semibold py-3 text-center">Cant.</th>
+          <th class="w-32 text-xs font-semibold py-3 text-right">P. Unitario ($)</th>
+          <th class="w-32 text-xs font-semibold py-3 text-right">Total ($)</th>
+          <th class="w-12 py-3 text-center"></th>
+        </tr>
+      </thead>
+
+      <tbody formArrayName="details">
+        @for (row of details.controls; track row; let i = $index) {
+          <tr [formGroupName]="i" class="hover:bg-base-200/20 border-b border-base-200/60">
+            <td class="pl-4 py-2 align-middle">
+              <app-generic-autocomplete
+                formControlName="productId"
+                placeholder="Escribe el nombre del producto..."
+                [options]="productOptionsArray()[i] ?? []"
+                [isLoading]="isProductsLoadingArray()[i] ?? false"
+                [isInvalid]="
+                  (details.controls[i].get('productId')?.touched &&
+                    details.controls[i].get('productId')?.invalid) ??
+                  false
+                "
+                errorMessage="Obligatorio"
+                (onQueryChange)="searchProducts($any($event), i)"
+                (onSelect)="onProductSelected($event, i)"
+              >
+              </app-generic-autocomplete>
+            </td>
+
+            <td class="py-2 align-middle">
+              <input
+                type="text"
+                formControlName="productBatchId"
+                placeholder="Ej. L-0452"
+                class="input input-bordered input-sm w-full focus:outline-none focus:border-primary text-xs h-10 rounded-xl"
+                [ngClass]="{
+                  'input-error':
+                    row.get('productBatchId')?.touched && row.get('productBatchId')?.invalid,
+                }"
+              />
+            </td>
+
+            <td class="py-2 text-center align-middle">
+              <input
+                type="number"
+                formControlName="quantity"
+                min="1"
+                (input)="calculateTotals()"
+                class="input input-bordered input-sm w-20 text-center focus:outline-none focus:border-primary text-xs h-10 rounded-xl"
+                [ngClass]="{
+                  'input-error': row.get('quantity')?.touched && row.get('quantity')?.invalid,
+                }"
+              />
+            </td>
+
+            <td class="py-2 text-right align-middle">
+              <input
+                type="number"
+                formControlName="unitPrice"
+                step="0.01"
+                min="0.01"
+                (input)="calculateTotals()"
+                class="input input-bordered input-sm w-28 text-right focus:outline-none focus:border-primary text-xs h-10 rounded-xl"
+                [ngClass]="{
+                  'input-error': row.get('unitPrice')?.touched && row.get('unitPrice')?.invalid,
+                }"
+              />
+            </td>
+
+            <td
+              class="py-2 text-right text-xs font-semibold pr-2 text-base-content/80 align-middle"
+            >
+              {{
+                (row.get('quantity')?.value || 0) * (row.get('unitPrice')?.value || 0) | currency
+              }}
+            </td>
+
+            <td class="py-2 text-center pr-4 align-middle">
+              <button
+                type="button"
+                (click)="removeDetailRow(i)"
+                class="btn btn-square btn-ghost btn-xs text-base-content/30 hover:text-error"
+                [disabled]="details.length <= 1"
+              >
+                <i class="pi pi-trash text-xs"></i>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-end">
+    <div
+      class="w-full sm:w-64 bg-base-200/50 border border-base-300 rounded-xl p-4 space-y-2 text-sm shadow-inner"
+    >
+      <div class="flex justify-between items-center text-base-content/60 font-medium">
+        <span>Subtotal:</span>
+        <span>{{ subtotal() | currency }}</span>
+      </div>
+      <div class="flex justify-between items-center text-base-content/60 font-medium">
+        <span>IVA ({{ company()?.iva ?? 15 }}%):</span>
+        <span>{{ currencySymbol() }}{{ tax() | number:'1.2-2' }}</span>
+      </div>
+      <div
+        class="border-t border-base-300 my-2 pt-2 flex justify-between items-center text-base-content font-bold text-base"
+      >
+        <span>Total Emitido:</span>
+        <span class="text-primary">{{ total() | currency }}</span>
+      </div>
+    </div>
+  </div>
+</form>

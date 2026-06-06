@@ -1,21 +1,24 @@
 import { Component, inject, signal, OnInit, effect, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SalesApiService, InvoiceResponseDto } from '../../../../core/api/v1'; // Ajusta la ruta según tu SDK
+import { SalesApiService, InvoiceResponseDto, CreateInvoiceRequestDto } from '../../../../core/api/v1'; // Ajusta la ruta según tu SDK
 import { GenericTable } from '../../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../../shared/interfaces/table-column.interface';
 import { TableAction } from '../../../../shared/interfaces/table-action.interface';
 import { DataFilter } from '../../../../shared/components/data-filter/data-filter';
 import { GenericModal } from "../../../../shared/components/generic-modal/generic-modal";
 import { InvoicePdfViewer } from '../../components/invoice-pdf-viewer/invoice-pdf-viewer';
+import { InvoiceForm } from "../../components/invoice-form/invoice-form";
 
 @Component({
   selector: 'app-invoice-list',
   standalone: true,
-  imports: [CommonModule, GenericTable, DataFilter, GenericModal, InvoicePdfViewer],
+  imports: [CommonModule, GenericTable, DataFilter, GenericModal, InvoicePdfViewer, InvoiceForm],
   templateUrl: './invoice-list.html'
 })
 export class InvoiceList implements OnInit {
   @ViewChild('pdfModal') pdfModal!: GenericModal;
+  @ViewChild('createInvoiceModal') createInvoiceModal!: GenericModal;
+  @ViewChild('invoiceFormComponent') invoiceForm!: InvoiceForm;
 
   private salesService = inject(SalesApiService);
 
@@ -109,5 +112,24 @@ export class InvoiceList implements OnInit {
   public closePdfModal(): void {
     this.pdfModal.close();
     this.selectedInvoiceId.set(null);
+  }
+
+  public openCreateInvoiceModal(): void {
+    this.invoiceForm.resetForCreate();
+    this.createInvoiceModal.open();
+  }
+
+  public handleInvoiceSubmit(payload: CreateInvoiceRequestDto): void {
+    this.isLoading.set(true);
+
+    this.salesService.apiSalesPost(payload).subscribe({
+      next: (response: any) => {
+        if (response && response.success) {
+          this.createInvoiceModal.close();
+          this.loadInvoices(); // Refresca tu grid de facturas automáticamente
+        }
+      },
+      error: () => this.isLoading.set(false)
+    });
   }
 }
