@@ -1,0 +1,64 @@
+<div class="form-control w-full relative font-sans text-sm">
+  @if (label()) {
+    <label class="label pt-0 pb-1">
+      <span class="label-text font-semibold text-base-content/80 text-xs">{{ label() }}</span>
+    </label>
+  }
+
+  <div class="relative flex items-center">
+    <input
+      type="text"
+      [value]="query()"
+      [placeholder]="placeholder()"
+      [disabled]="isDisabled()"
+      (input)="onInputChange($event)"
+      (focus)="isOpen.set(true)"
+      class="input input-bordered input-sm w-full h-10 pr-10 focus:outline-none focus:border-primary rounded-xl transition-all duration-200 text-xs text-base-content"
+      [ngClass]="{ 'input-error': isInvalid(), 'bg-base-200/50 cursor-not-allowed': isDisabled() }"
+    />
+
+    <div class="absolute right-3 flex items-center pointer-events-none">
+      @if (isLoading()) {
+        <span class="loading loading-spinner loading-xs text-primary"></span>
+      } @else {
+        <i
+          class="pi text-base-content/40 text-[11px] transition-transform duration-200"
+          [ngClass]="isOpen() ? 'pi-chevron-up text-primary' : 'pi-chevron-down'"
+          (click)="toggleDropdown()">
+        </i>
+      }
+    </div>
+  </div>
+
+  @if (isOpen() && !isDisabled()) {
+    <ul class="absolute z-50 left-0 w-full bg-base-100 border border-base-300 rounded-xl shadow-xl mt-11 max-h-56 overflow-y-auto py-1 animate-fade-in list-none p-0 m-0">
+
+      @for (option of options(); track option.value) {
+        <li>
+          <button
+            type="button"
+            (click)="selectOption(option)"
+            class="w-full text-left px-4 py-2 hover:bg-base-200/60 flex flex-col gap-0.5 transition-colors duration-150">
+            <span class="font-medium text-xs text-base-content">{{ option.label }}</span>
+            @if (option.subLabel) {
+              <span class="text-[10px] text-base-content/40 font-normal tracking-wide">{{ option.subLabel }}</span>
+            }
+          </button>
+        </li>
+      }
+
+      @if (options().length === 0 && !isLoading()) {
+        <li class="px-4 py-4 text-center text-xs text-base-content/40 font-medium">
+          <i class="pi pi-search text-xs mb-1 block"></i>
+          No se encontraron resultados
+        </li>
+      }
+    </ul>
+  }
+
+  @if (isInvalid() && errorMessage()) {
+    <span class="text-[11px] text-error mt-1 font-medium px-1 tracking-wide animate-slide-down">
+      {{ errorMessage() }}
+    </span>
+  }
+</div>
