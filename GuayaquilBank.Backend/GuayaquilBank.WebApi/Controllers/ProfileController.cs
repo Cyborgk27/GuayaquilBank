@@ -2,6 +2,7 @@
 using GuayaquilBank.Application.Dtos.Profile.Request;
 using GuayaquilBank.Application.Dtos.Profile.Response;
 using GuayaquilBank.WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuayaquilBank.WebApi.Controllers
@@ -11,6 +12,7 @@ namespace GuayaquilBank.WebApi.Controllers
     /// Resuelve de forma segura las identidades mediante el procesamiento del Bearer Token JWT.
     /// </summary>
     [Route("api/[controller]")]
+    [Authorize]
     public class ProfileController : BaseApiController
     {
         private readonly IProfileAppService _profileService;

@@ -3,6 +3,7 @@ using GuayaquilBank.Application.Dtos.Common;
 using GuayaquilBank.Application.Dtos.Identity.Request;
 using GuayaquilBank.Application.Dtos.Identity.Response;
 using GuayaquilBank.WebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuayaquilBank.WebApi.Controllers
@@ -12,6 +13,7 @@ namespace GuayaquilBank.WebApi.Controllers
     /// Mantiene de forma estricta el aislamiento por Tenant (Empresa) según el contexto del usuario autenticado.
     /// </summary>
     [Route("api/[controller]")]
+    [Authorize]
     public class UsersController : BaseApiController
     {
         private readonly IUserAppService _userService;
