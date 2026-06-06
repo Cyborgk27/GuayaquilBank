@@ -55,7 +55,7 @@ namespace GuayaquilBank.WebApi.Controllers
             var result = await _customerService.CreateAsync(request);
 
             var response = ApiResponse<CustomerResponseDto>.SuccessResponse(result, "Cliente registrado exitosamente.", StatusCodes.Status201Created);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, response);
+            return CreatedAtAction("GetById", new { id = result.Id }, response);
         }
 
         /// <summary>
@@ -136,12 +136,12 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="204">El estado del cliente cambió y se guardó exitosamente.</response>
         /// <response code="404">Si el cliente no se encuentra registrado dentro de la empresa.</response>
         [HttpPatch("{id:guid}/toggle-status")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ToggleStatusAsync(Guid id)
         {
             await _customerService.ToggleStatusAsync(id);
-            return ToResponse((object?)null, "El estado comercial del cliente fue conmutado con éxito.", StatusCodes.Status204NoContent);
+            return ToResponse((object?)null, "El estado comercial del cliente fue conmutado con éxito.", StatusCodes.Status200OK);
         }
     }
 }
