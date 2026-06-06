@@ -1,0 +1,89 @@
+<div class="drawer lg:drawer-open min-h-screen bg-base-200 font-sans">
+  <input id="erp-sidebar" type="checkbox" class="drawer-toggle" />
+
+  <div class="drawer-content flex flex-col">
+
+    <div class="navbar bg-base-100 shadow-sm border-b border-base-300 px-4 lg:px-6 h-16 sticky top-0 z-20">
+      <div class="flex-none lg:hidden">
+        <label for="erp-sidebar" class="btn btn-square btn-ghost drawer-button">
+          <i class="pi pi-bars text-xl"></i>
+        </label>
+      </div>
+
+      <div class="flex-1 px-2 mx-2">
+        <div class="badge badge-neutral gap-2 font-mono text-xs uppercase tracking-wider py-3 px-3">
+          <i class="pi pi-building text-[10px]"></i>
+          Compañia: {{ authService.currentUser()?.companyName }}
+        </div>
+      </div>
+
+      <div class="flex-none gap-4">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar placeholder">
+            <div class="bg-primary text-primary-content rounded-full w-10">
+              <span class="text-md font-bold">
+                {{ (authService.currentUser()?.username || 'U').charAt(0).toUpperCase() }}
+              </span>
+            </div>
+          </div>
+          <ul tabindex="0" class="mt-3 z-[30] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200">
+            <li class="menu-title px-4 py-2 border-b border-base-200 mb-1">
+              <span class="font-bold text-base-content block">{{ authService.currentUser()?.username }}</span>
+              <span class="text-xs text-base-content/50 font-normal block truncate">{{ authService.currentUser()?.companyName }}</span>
+            </li>
+            <li><a routerLink="/profile"><i class="pi pi-user text-xs"></i> Mi Perfil</a></li>
+            <li><a (click)="onLogout()" class="text-error font-semibold"><i class="pi pi-power-off text-xs"></i> Cerrar Sesión</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <main class="flex-1 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+  <div class="drawer-side z-30 shadow-xl lg:shadow-none">
+    <label for="erp-sidebar" aria-label="close sidebar" class="drawer-overlay"></label>
+
+    <div class="menu p-4 w-72 min-h-screen bg-base-100 border-r border-base-300 text-base-content flex flex-col justify-between">
+      <div>
+        <div class="flex items-center gap-3 px-4 py-3 mb-6 border-b border-base-200">
+          <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-content shadow-md shadow-primary/20">
+            <i class="pi pi-bolt text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold tracking-tight text-primary">Guayaquil Bank</h1>
+            <p class="text-[10px] uppercase font-bold text-base-content/40 tracking-widest">Core Cloud ERP</p>
+          </div>
+        </div>
+
+        <ul class="space-y-1">
+          @for (item of menuItems; track item.route) {
+            <li>
+              <a
+                [routerLink]="item.route"
+                routerLinkActive="active bg-primary text-primary-content font-semibold shadow-md shadow-primary/10"
+                class="flex items-center gap-4 py-3 px-4 rounded-lg transition-all duration-200 hover:bg-base-200 group">
+                <i class="pi text-base text-base-content/60 group-[.active]:text-primary-content" [ngClass]="item.icon"></i>
+                <span class="text-sm tracking-wide">{{ item.label }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="bg-base-200/50 p-4 rounded-xl border border-base-200 flex items-center gap-3 mt-auto">
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold truncate text-base-content">{{ authService.currentUser()?.fullName || 'Operador' }}</p>
+          <p class="text-[10px] text-base-content/50 uppercase font-semibold">Sistema Activo</p>
+        </div>
+        <button (click)="onLogout()" class="btn btn-square btn-ghost btn-sm text-error hover:bg-error/10" title="Cerrar Sesión">
+          <i class="pi pi-power-off text-sm"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
