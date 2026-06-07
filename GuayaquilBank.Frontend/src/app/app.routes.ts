@@ -1,14 +1,17 @@
 import { Routes } from '@angular/router';
+import { authGuard, noAuthGuard } from './core/guards';
 
 export const routes: Routes = [
   {
     path: 'login',
     title: 'Iniciar Sesión - Guayaquil Bank ERP',
+    canActivate: [noAuthGuard],
     loadComponent: () => import('./features/auth/pages/login/login')
       .then(m => m.Login)
   },
   {
     path: '',
+    canActivate: [authGuard],
     loadComponent: () => import('./shared/components/layout/layout/layout')
       .then(m => m.Layout),
     children: [
