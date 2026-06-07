@@ -35,6 +35,11 @@ export const routes: Routes = [
         title: 'Gestión de Usuarios - Guayaquil Bank ERP',
         loadComponent: () => import('./features/users/components/users-list/users-list')
           .then(m => m.UsersList)
+      },
+      {
+        path: 'profile',
+        title: 'Perfil de Usuario - Guayaquil Bank ERP',
+        loadComponent: () => import('./features/profile/profile').then(m => m.Profile)
       }
     ]
   }

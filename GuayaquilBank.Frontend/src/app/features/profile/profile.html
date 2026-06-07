@@ -1,0 +1,301 @@
+<div class="space-y-6 p-4 sm:p-6">
+  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold">Perfil de Usuario</h1>
+      <p class="text-sm text-base-content/60">Actualiza tus datos personales y tu avatar.</p>
+    </div>
+    <div class="badge badge-primary badge-lg gap-2">
+      <i class="pi pi-user"></i>
+      <span>Usuario: {{ myUserResponseDto()?.username || 'Sin usuario' }}</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[320px_auto] gap-6">
+    <div class="card bg-base-100 shadow-sm border border-base-200 p-5 rounded-3xl">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <div class="w-28 h-28 rounded-full overflow-hidden bg-base-200 grid place-items-center">
+          @if (myUserResponseDto()?.profilePictureUrl) {
+            <img [src]="myUserResponseDto()?.profilePictureUrl" alt="Avatar" class="object-cover w-full h-full" />
+          }@else{
+            defaultAvatar
+          }
+          <ng-template #defaultAvatar>
+            <i class="pi pi-user text-4xl text-base-content/40"></i>
+          </ng-template>
+        </div>
+        <div>
+          <p class="text-sm text-base-content/70">Perfil actual</p>
+          <p class="font-semibold">{{ myUserResponseDto()?.fullName || 'Sin nombre completo' }}</p>
+          <p class="text-sm text-base-content/70">{{ myUserResponseDto()?.username || 'Sin usuario' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-sm border border-base-200 p-6 rounded-3xl">
+      <form [formGroup]="profileForm" (ngSubmit)="submit()" class="space-y-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <app-generic-input
+            formControlName="firstName"
+            label="Nombre"
+            placeholder="Ej. Juan"
+            icon="pi-user-edit"
+            iconPosition="left"
+            [isInvalid]="isFieldInvalid('firstName')"
+            [errorMessage]="getErrorMessage('firstName')"
+          ></app-generic-input>
+
+          <app-generic-input
+            formControlName="lastName"
+            label="Apellido"
+            placeholder="Ej. Pérez"
+            icon="pi-user"
+            iconPosition="left"
+            [isInvalid]="isFieldInvalid('lastName')"
+            [errorMessage]="getErrorMessage('lastName')"
+          ></app-generic-input>
+        </div>
+
+        <app-generic-input
+          formControlName="email"
+          label="Correo Electrónico"
+          placeholder="correo@dominio.com"
+          type="email"
+          icon="pi-envelope"
+          iconPosition="left"
+          [isInvalid]="isFieldInvalid('email')"
+          [errorMessage]="getErrorMessage('email')"
+        ></app-generic-input>
+
+        <app-generic-input
+          formControlName="profilePictureUrl"
+          label="Foto de Perfil (URL)"
+          placeholder="https://.../avatar.png"
+          icon="pi-image"
+          iconPosition="left"
+        ></app-generic-input>
+
+        <div class="space-y-3">
+          <div *ngIf="successMessage()" class="rounded-lg bg-success/10 border border-success text-success p-3 text-sm font-medium">
+            {{ successMessage() }}
+          </div>
+          <div *ngIf="errorMessage()" class="rounded-lg bg-error/10 border border-error text-error p-3 text-sm font-medium">
+            {{ errorMessage() }}
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <button type="submit" class="btn btn-primary w-full sm:w-auto" [disabled]="isLoading()">
+            <ng-container *ngIf="!isLoading(); else loadingProfileBtn">
+              <span>Guardar cambios</span>
+            </ng-container>
+            <ng-template #loadingProfileBtn>
+              <span class="inline-flex items-center gap-2">
+                <span class="loading loading-spinner loading-sm"></span>
+                Guardando...
+              </span>
+            </ng-template>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[320px_auto] gap-6">
+    <div class="card bg-base-100 shadow-sm border border-base-200 p-5 rounded-3xl">
+      <div class="flex flex-col items-center gap-4 text-center">
+        <div class="w-28 h-28 rounded-full overflow-hidden bg-base-200 grid place-items-center">
+          @if (myCompanyResponseDto()?.logoUrl) {
+            <img [src]="myCompanyResponseDto()?.logoUrl" alt="Avatar" class="object-cover w-full h-full" />
+          }@else{
+            defaultAvatar
+          }
+          <ng-template #defaultAvatar>
+            <i class="pi pi-user text-4xl text-base-content/40"></i>
+          </ng-template>
+        </div>
+        <div>
+          <p class="text-sm text-base-content/70">Compañia actual</p>
+          <p class="font-semibold">{{ myCompanyResponseDto()?.name || 'Sin nombre completo' }}</p>
+        </div>
+      </div>
+    </div>
+
+  <div class="grid grid-cols-1 gap-6">
+    <div class="card bg-base-100 shadow-sm border border-base-200 p-6 rounded-3xl">
+      <div class="mb-5 flex items-center gap-3">
+        <i class="pi pi-building text-3xl text-primary"></i>
+        <div>
+          <h2 class="text-xl font-semibold">Información de la compañía</h2>
+          <p class="text-sm text-base-content/60">Edita los datos comerciales del Tenant.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="companyForm" (ngSubmit)="submitCompany()" class="space-y-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <app-generic-input
+            formControlName="name"
+            label="Razón Social"
+            placeholder="Ej. Guayaquil Bank S.A."
+            icon="pi-building"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('name')"
+            [errorMessage]="getCompanyErrorMessage('name')"
+          ></app-generic-input>
+
+          <app-generic-input
+            formControlName="taxId"
+            label="RUC / Identificación"
+            placeholder="Ej. 1790012345001"
+            icon="pi-id-card"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('taxId')"
+            [errorMessage]="getCompanyErrorMessage('taxId')"
+          ></app-generic-input>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <app-generic-input
+            formControlName="domain"
+            label="Dominio"
+            placeholder="Ej. guayaquilbank.com"
+            icon="pi-globe"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('domain')"
+            [errorMessage]="getCompanyErrorMessage('domain')"
+          ></app-generic-input>
+
+          <app-generic-input
+            formControlName="logoUrl"
+            label="Logo (URL)"
+            placeholder="https://.../logo.png"
+            icon="pi-image"
+            iconPosition="left"
+          ></app-generic-input>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <app-generic-input
+            formControlName="email"
+            label="Correo Empresarial"
+            placeholder="contacto@empresa.com"
+            type="email"
+            icon="pi-envelope"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('email')"
+            [errorMessage]="getCompanyErrorMessage('email')"
+          ></app-generic-input>
+
+          <app-generic-input
+            formControlName="phoneNumber"
+            label="Teléfono"
+            placeholder="Ej. 0991234567"
+            icon="pi-phone"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('phoneNumber')"
+            [errorMessage]="getCompanyErrorMessage('phoneNumber')"
+          ></app-generic-input>
+        </div>
+
+        <app-generic-input
+          formControlName="address"
+          label="Dirección"
+          placeholder="Av. Principal 123"
+          icon="pi-map-marker"
+          iconPosition="left"
+          [isInvalid]="isCompanyFieldInvalid('address')"
+          [errorMessage]="getCompanyErrorMessage('address')"
+        ></app-generic-input>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <app-generic-input
+            formControlName="city"
+            label="Ciudad"
+            placeholder="Guayaquil"
+            icon="pi-map"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('city')"
+            [errorMessage]="getCompanyErrorMessage('city')"
+          ></app-generic-input>
+
+          <app-generic-input
+            formControlName="region"
+            label="Provincia / Región"
+            placeholder="Guayas"
+            icon="pi-compass"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('region')"
+            [errorMessage]="getCompanyErrorMessage('region')"
+          ></app-generic-input>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <app-generic-input
+            formControlName="postalCode"
+            label="Código Postal"
+            placeholder="090152"
+            icon="pi-envelope"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('postalCode')"
+            [errorMessage]="getCompanyErrorMessage('postalCode')"
+          ></app-generic-input>
+
+          <app-generic-input
+            formControlName="country"
+            label="País"
+            placeholder="Ecuador"
+            icon="pi-flag"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('country')"
+            [errorMessage]="getCompanyErrorMessage('country')"
+          ></app-generic-input>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <app-generic-input
+            formControlName="currencySymbol"
+            label="Símbolo de Moneda"
+            placeholder="Ej. $"
+            icon="pi-dollar"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('currencySymbol')"
+            [errorMessage]="getCompanyErrorMessage('currencySymbol')"
+          ></app-generic-input>
+
+          <app-generic-input
+            formControlName="iva"
+            label="IVA (%)"
+            placeholder="12"
+            type="number"
+            icon="pi-percent"
+            iconPosition="left"
+            [isInvalid]="isCompanyFieldInvalid('iva')"
+            [errorMessage]="getCompanyErrorMessage('iva')"
+          ></app-generic-input>
+        </div>
+
+        <div class="space-y-3">
+          <div *ngIf="companySuccessMessage()" class="rounded-lg bg-success/10 border border-success text-success p-3 text-sm font-medium">
+            {{ companySuccessMessage() }}
+          </div>
+          <div *ngIf="companyErrorMessage()" class="rounded-lg bg-error/10 border border-error text-error p-3 text-sm font-medium">
+            {{ companyErrorMessage() }}
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <button type="submit" class="btn btn-primary w-full sm:w-auto" [disabled]="isCompanyLoading()">
+            <ng-container *ngIf="!isCompanyLoading(); else loadingCompanyBtn">
+              <span>Guardar compañía</span>
+            </ng-container>
+            <ng-template #loadingCompanyBtn>
+              <span class="inline-flex items-center gap-2">
+                <span class="loading loading-spinner loading-sm"></span>
+                Guardando...
+              </span>
+            </ng-template>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
