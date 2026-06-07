@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,       
+    RouterLink,
     RouterLinkActive
   ],
   templateUrl: './layout.html',
@@ -23,6 +23,7 @@ export class Layout {
     { label: 'Clientes', icon: 'pi-users', route: '/customers' },
     { label: 'Productos', icon: 'pi-box', route: '/products' },
     { label: 'Facturación / Ventas', icon: 'pi-wallet', route: '/sales' },
+    { label: 'Usuarios', icon: 'pi-user', route: '/users' },
     { label: 'Configuración', icon: 'pi-cog', route: '/profile' },
   ];
 

@@ -29,6 +29,12 @@ export const routes: Routes = [
         title: 'Gestión de Facturas - Guayaquil Bank ERP',
         loadComponent: () => import('./features/invoices/pages/invoice-list/invoice-list')
           .then(m => m.InvoiceList)
+      },
+      {
+        path: 'users',
+        title: 'Gestión de Usuarios - Guayaquil Bank ERP',
+        loadComponent: () => import('./features/users/components/users-list/users-list')
+          .then(m => m.UsersList)
       }
     ]
   }

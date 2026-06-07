@@ -1,0 +1,3 @@
+/* minimal styling */
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 0.5rem 0.75rem; text-align: left; }

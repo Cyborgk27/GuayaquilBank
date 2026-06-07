@@ -1,0 +1,48 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4 font-sans text-base-content">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-generic-input
+      formControlName="username"
+      label="Usuario"
+      placeholder="Ej. juanperez"
+      icon="pi-user"
+      iconPosition="left"
+      [isInvalid]="isFieldInvalid('username')"
+      [errorMessage]="getErrorMessage('username')"
+    ></app-generic-input>
+
+    <app-generic-input
+      formControlName="email"
+      label="Correo Electrónico"
+      placeholder="correo@dominio.com"
+      type="email"
+      icon="pi-envelope"
+      iconPosition="left"
+      [isInvalid]="isFieldInvalid('email')"
+      [errorMessage]="getErrorMessage('email')"
+    ></app-generic-input>
+
+    <app-generic-input
+      formControlName="firstName"
+      label="Nombre"
+      placeholder="Ej. Juan"
+      icon="pi-user-edit"
+      iconPosition="left"
+      [isInvalid]="isFieldInvalid('firstName')"
+      [errorMessage]="getErrorMessage('firstName')"
+    ></app-generic-input>
+
+    <app-generic-input
+      formControlName="lastName"
+      label="Apellido"
+      placeholder="Ej. Pérez"
+      icon="pi-user"
+      iconPosition="left"
+      [isInvalid]="isFieldInvalid('lastName')"
+      [errorMessage]="getErrorMessage('lastName')"
+    ></app-generic-input>
+  </div>
+
+  <div class="hidden">
+    <button type="submit" id="hidden-submit-btn"></button>
+  </div>
+</form>
