@@ -21,7 +21,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
 export class GenericInput implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() placeholder: string = '';
-  @Input() type: 'text' | 'password' | 'email' | 'number' = 'text';
+  @Input() type: 'text' | 'password' | 'email' | 'number' | 'date' = 'text';
   @Input() icon: string = '';
   @Input() iconPosition: 'left' | 'right' = 'left';
   @Input() errorMessage: string = '';

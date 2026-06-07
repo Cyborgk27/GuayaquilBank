@@ -76,11 +76,11 @@
               <app-generic-autocomplete
                 formControlName="productId"
                 placeholder="Escribe el nombre del producto..."
-                [options]="productOptionsArray()[i] ?? []"
-                [isLoading]="isProductsLoadingArray()[i] ?? false"
+                [options]="productOptionsArray()[i] || []"
+                [isLoading]="isProductsLoadingArray()[i] || false"
                 [isInvalid]="
                   (details.controls[i].get('productId')?.touched &&
-                    details.controls[i].get('productId')?.invalid) ??
+                    details.controls[i].get('productId')?.invalid) ||
                   false
                 "
                 errorMessage="Obligatorio"

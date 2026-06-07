@@ -1,0 +1,77 @@
+<form [formGroup]="productForm" (ngSubmit)="submit()" class="space-y-4 font-sans text-base-content">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-generic-input
+      formControlName="name"
+      label="Nombre del Producto *"
+      [isInvalid]="isFieldInvalid('name')"
+      errorMessage="{{ getErrorMessage('name') }}">
+    </app-generic-input>
+
+    <app-generic-input
+      formControlName="sku"
+      label="SKU / Código Interno *"
+      [isInvalid]="isFieldInvalid('sku')"
+      errorMessage="{{ getErrorMessage('sku') }}">
+    </app-generic-input>
+  </div>
+
+  <app-generic-input
+    formControlName="description"
+    label="Descripción"
+    [isInvalid]="isFieldInvalid('description')"
+    errorMessage="{{ getErrorMessage('description') }}">
+  </app-generic-input>
+
+  <div class="bg-base-200/60 border border-base-300 rounded-xl p-4">
+    <div class="flex items-center gap-3 mb-4">
+      <input
+        type="checkbox"
+        formControlName="useInitialBatch"
+        class="checkbox checkbox-primary"
+        id="useInitialBatchToggle"
+      />
+      <label for="useInitialBatchToggle" class="text-sm font-semibold text-base-content">
+        Agregar lote inicial al producto
+      </label>
+    </div>
+
+    <div *ngIf="productForm.get('useInitialBatch')?.value" formGroupName="initialBatch" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-generic-input
+        formControlName="batchNumber"
+        label="Número de Lote *"
+        [isInvalid]="isFieldInvalid('initialBatch.batchNumber')"
+        errorMessage="{{ getErrorMessage('initialBatch.batchNumber') }}">
+      </app-generic-input>
+
+      <app-generic-input
+        formControlName="quantity"
+        label="Cantidad Inicial *"
+        [isInvalid]="isFieldInvalid('initialBatch.quantity')"
+        errorMessage="{{ getErrorMessage('initialBatch.quantity') }}"
+        type="number">
+      </app-generic-input>
+
+      <app-generic-input
+        formControlName="unitCost"
+        label="Costo Unitario *"
+        [isInvalid]="isFieldInvalid('initialBatch.unitCost')"
+        errorMessage="{{ getErrorMessage('initialBatch.unitCost') }}"
+        type="number">
+      </app-generic-input>
+
+      <app-generic-input
+        formControlName="manufacturedAt"
+        label="Fecha de Fabricación *"
+        [isInvalid]="isFieldInvalid('initialBatch.manufacturedAt')"
+        errorMessage="{{ getErrorMessage('initialBatch.manufacturedAt') }}"
+        >
+      </app-generic-input>
+
+      <app-generic-input
+        formControlName="expirationDate"
+        label="Fecha de Vencimiento"
+        >
+      </app-generic-input>
+    </div>
+  </div>
+</form>

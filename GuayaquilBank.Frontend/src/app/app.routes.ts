@@ -19,6 +19,12 @@ export const routes: Routes = [
           .then(m => m.CustomerList)
       },
       {
+        path: 'products',
+        title: 'Gestión de Productos - Guayaquil Bank ERP',
+        loadComponent: () => import('./features/products/pages/product-list/product-list')
+          .then(m => m.ProductList)
+      },
+      {
         path: 'sales',
         title: 'Gestión de Facturas - Guayaquil Bank ERP',
         loadComponent: () => import('./features/invoices/pages/invoice-list/invoice-list')

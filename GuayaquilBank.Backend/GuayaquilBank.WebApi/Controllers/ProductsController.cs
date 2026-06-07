@@ -93,14 +93,14 @@ namespace GuayaquilBank.WebApi.Controllers
         /// <response code="400">Si las cantidades ingresadas rompen reglas de valor numérico positivo.</response>
         /// <response code="404">Si el producto a reabastecer no fue localizado en el dominio organizacional.</response>
         [HttpPost("{id:guid}/batches")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddBatch(Guid id, [FromBody] CreateProductBatchRequestDto request)
         {
             await _appService.VoidAddBatchAsync(id, request);
 
-            return ToResponse((object?)null, "Lote de inventario reabastecido y stock recalculado con éxito.", StatusCodes.Status204NoContent);
+            return ToResponse((object?)null, "Lote de inventario reabastecido y stock recalculado con éxito.", StatusCodes.Status200OK);
         }
     }
 }

@@ -1,0 +1,40 @@
+<form [formGroup]="batchForm" (ngSubmit)="submit()" class="space-y-4 font-sans text-base-content">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-generic-input
+      formControlName="batchNumber"
+      label="Número de Lote *"
+      [isInvalid]="isFieldInvalid('batchNumber')"
+      errorMessage="{{ getErrorMessage('batchNumber') }}">
+    </app-generic-input>
+
+    <app-generic-input
+      formControlName="quantity"
+      label="Cantidad *"
+      [isInvalid]="isFieldInvalid('quantity')"
+      errorMessage="{{ getErrorMessage('quantity') }}"
+      type="number">
+    </app-generic-input>
+
+    <app-generic-input
+      formControlName="unitCost"
+      label="Costo Unitario *"
+      [isInvalid]="isFieldInvalid('unitCost')"
+      errorMessage="{{ getErrorMessage('unitCost') }}"
+      type="number">
+    </app-generic-input>
+
+    <app-generic-input
+      formControlName="manufacturedAt"
+      label="Fecha de Fabricación *"
+      [isInvalid]="isFieldInvalid('manufacturedAt')"
+      errorMessage="{{ getErrorMessage('manufacturedAt') }}"
+      type="date">
+    </app-generic-input>
+
+    <app-generic-input
+      formControlName="expirationDate"
+      label="Fecha de Vencimiento"
+      type="date">
+    </app-generic-input>
+  </div>
+</form>

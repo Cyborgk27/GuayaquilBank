@@ -1,0 +1,104 @@
+<div class="p-6 max-w-7xl mx-auto font-sans">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-base-content tracking-tight">Catálogo de Productos</h1>
+      <p class="text-sm text-base-content/60 font-medium">Vista general del inventario y stock disponible por artículo.</p>
+    </div>
+    <button (click)="openCreateModal()" class="btn btn-primary gap-2 self-start sm:self-auto shadow-md">
+      <i class="pi pi-plus text-xs"></i>
+      Nuevo Producto
+    </button>
+  </div>
+
+  <div class="mb-6">
+    <app-data-filter (onSearch)="handleSearch($event)"></app-data-filter>
+  </div>
+
+  <app-generic-table
+    [columns]="tableColumns"
+    [data]="products()"
+    [actions]="tableActions"
+    [isLoading]="isLoading()"
+    [currentPage]="page()"
+    [totalPages]="totalPages()"
+    [totalItems]="totalItems()"
+    (pageChange)="page.set($event)"
+    emptyMessage="No se encontraron productos registrados en este catálogo corporativo."
+    emptyIcon="pi-box">
+  </app-generic-table>
+</div>
+
+<app-generic-modal
+  #productModal
+  title="Registrar Nuevo Producto"
+  sizeClass="max-w-xl">
+
+  <div modal-body class="relative">
+    @if (isModalLoading()) {
+      <div class="absolute inset-0 bg-base-100/80 z-10 flex flex-col items-center justify-center gap-3 rounded-xl min-h-75">
+        <span class="loading loading-spinner loading-md text-primary"></span>
+        <span class="text-xs font-semibold text-base-content/60">Creando el producto en el catálogo de inventario...</span>
+      </div>
+    }
+
+    <app-product-form
+      #productFormComponent
+      (onSubmitForm)="handleFormSubmit($event)"
+      (onCancel)="productModal.close()">
+    </app-product-form>
+  </div>
+
+  <ng-container modal-footer>
+    <button (click)="productModal.close()" class="btn btn-sm btn-ghost" [disabled]="isModalLoading()">
+      Cancelar
+    </button>
+    <button
+      (click)="productFormComponent.submit()"
+      class="btn btn-sm btn-primary px-5 shadow-md gap-2"
+      [disabled]="isModalLoading()">
+      @if (isModalLoading()) {
+        <span class="loading loading-spinner loading-xs"></span>
+      }
+      Guardar Producto
+    </button>
+  </ng-container>
+</app-generic-modal>
+
+<app-generic-modal
+  #batchModal
+  title="Agregar lote al producto"
+  sizeClass="max-w-xl">
+
+  <div modal-body class="relative">
+    @if (isModalLoading()) {
+      <div class="absolute inset-0 bg-base-100/80 z-10 flex flex-col items-center justify-center gap-3 rounded-xl min-h-75">
+        <span class="loading loading-spinner loading-md text-primary"></span>
+        <span class="text-xs font-semibold text-base-content/60">Registrando lote en el producto seleccionado...</span>
+      </div>
+    }
+
+    <div class="space-y-4">
+      <p class="text-sm text-base-content/70">Producto: <strong>{{ selectedProduct()?.name || 'N/A' }}</strong></p>
+      <app-product-batch-form
+        #productBatchFormComponent
+        (onSubmitBatch)="handleBatchSubmit($event)"
+        (onCancel)="batchModal.close()">
+      </app-product-batch-form>
+    </div>
+  </div>
+
+  <ng-container modal-footer>
+    <button (click)="batchModal.close()" class="btn btn-sm btn-ghost" [disabled]="isModalLoading()">
+      Cancelar
+    </button>
+    <button
+      (click)="productBatchForm.submit()"
+      class="btn btn-sm btn-primary px-5 shadow-md gap-2"
+      [disabled]="isModalLoading()">
+      @if (isModalLoading()) {
+        <span class="loading loading-spinner loading-xs"></span>
+      }
+      Guardar Lote
+    </button>
+  </ng-container>
+</app-generic-modal>
