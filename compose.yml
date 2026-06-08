@@ -1,0 +1,35 @@
+services:
+  # Servicio de Backend (.NET 8 WebApi + SQLite)
+  backend:
+    image: guayaquilbank-backend
+    container_name: guayaquilbank-api
+    build:
+      context: ./GuayaquilBank.Backend
+      dockerfile: GuayaquilBank.WebApi/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__SqliteConnection=Data Source=/app/data/GuayaquilBankDb.db;
+    volumes:
+      - ./Data:/app/data
+    networks:
+      - guayaquilbank-network
+
+  # Servicio de Frontend (Angular + Nginx)
+  frontend:
+    image: guayaquilbank-frontend
+    container_name: guayaquilbank-web
+    build:
+      context: ./GuayaquilBank.Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - guayaquilbank-network
+
+networks:
+  guayaquilbank-network:
+    driver: bridge

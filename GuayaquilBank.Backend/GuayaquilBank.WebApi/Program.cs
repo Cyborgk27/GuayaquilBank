@@ -97,6 +97,8 @@ try
 
     var app = builder.Build();
 
+    app.UseCors("GuayaquilBankCorsPolicy");
+
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -106,25 +108,26 @@ try
         var services = scope.ServiceProvider;
         try
         {
-            Log.Information("Ejecutando migraciones y siembra de datos de prueba...");
+            Log.Information("Ejecutando migraciones y siembra de datos de prueba en SQLite...");
             var context = services.GetRequiredService<ApplicationDbContext>();
             var seeder = services.GetRequiredService<ContextSeed>();
 
             await context.Database.MigrateAsync();
             await seeder.SeedAsync();
-            Log.Information("Base de datos sincronizada y poblada exitosamente.");
+            Log.Information("Base de datos SQLite sincronizada y poblada exitosamente.");
         }
         catch (Exception ex)
         {
             Log.Fatal(ex, "Ocurrió un error irreversible mientras se poblaba la base de datos de desarrollo.");
+            throw;
         }
+    }
+    else
+    {
+        app.UseHttpsRedirection();
     }
 
     app.UseSerilogRequestLogging();
-
-    app.UseHttpsRedirection();
-
-    app.UseCors("GuayaquilBankCorsPolicy");
 
     app.UseMiddleware<ExceptionHandlingMiddleware>();
 

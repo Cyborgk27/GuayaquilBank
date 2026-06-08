@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "generate:api": "curl -k https://localhost:7221/swagger/v1/swagger.json -o swagger_temp.json && openapi-generator-cli generate --skip-validate-spec -i swagger_temp.json -g typescript-angular -o src/app/core/api/v1 --additional-properties=providedInRoot=true,serviceSuffix=ApiService,stringEnums=true && npx shx rm -f swagger_temp.json"
+    "generate:api": "curl -k https://localhost:7221/swagger/v1/swagger.json -o swagger_temp.json && openapi-generator-cli generate --skip-validate-spec -i swagger_temp.json -g typescript-angular -o src/app/core/api/v1 --additional-properties=providedInRoot=true,serviceSuffix=ApiService,stringEnums=true && npx shx rm -f swagger_temp.json",
+    "generate:api:prod": "curl -k http://localhost:5000/swagger/v1/swagger.json -o swagger_temp.json && openapi-generator-cli generate --skip-validate-spec -i swagger_temp.json -g typescript-angular -o src/app/core/api/v1 --additional-properties=providedInRoot=true,serviceSuffix=ApiService,stringEnums=true && npx shx rm -f swagger_temp.json"
   },
   "private": true,
   "packageManager": "npm@11.11.0",
